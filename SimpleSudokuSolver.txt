@@ -1,0 +1,104 @@
+// William Somat
+
+board = [
+  [" "," "," ",5,2,4," "," ",9],
+  [" ",9," ",1," ",8," ",7,2],
+  [2," "," "," "," "," "," ",1," "],
+  [1," ",2,8," "," ",9," ",6],
+  [5," "," ",6," ",7," "," ",3],
+  [6," ",9," "," ",2,7," ",5],
+  [" ",2," "," "," "," "," "," ",8],
+  [3,8," ",2," ",9," ",5," "],
+  [7," "," ",3,8,6," "," "," "]
+]
+
+"""
+The board above can be seen as the board below where 0 is a blank space
+  [0,0,0,5,2,4,0,0,9],
+  [0,9,0,1,0,8,0,7,2],
+  [2,0,0,0,0,0,0,1,0],
+  [1,0,2,8,0,0,9,0,6],
+  [5,0,0,6,0,7,0,0,3],
+  [6,0,9,0,0,2,7,0,5],
+  [0,2,0,0,0,0,0,0,8],
+  [3,8,0,2,0,9,0,5,0],
+  [7,0,0,3,8,6,0,0,0]
+
+"""
+def displayBoard(board):
+  print("Sudoku Board: \n")
+  print("= = = = = = = = = = = = =")
+
+  for i in range(len(board)):
+    if i % 3 == 0 and i != 0:   # print the command below for every 3rd row
+      print("= = = = = = = = = = = = =")
+
+    for j in range(len(board[0])):
+      if j % 3 == 0:  # print the command below for every three columns except most right
+        print("| ", end="")
+
+      if j == 8:  # end of line
+        print(board[i][j], end = " ") 
+        print("|")
+      else:
+        print(str(board[i][j]) + " ", end="")
+  print("= = = = = = = = = = = = =")
+  print("\n")
+
+def find_empty(board):
+  for i in range(len(board)):
+      for j in range(len(board[0])):
+          if board[i][j] == " ":  # if it is empty
+            return (i, j)  # returns the row and column
+
+  return None   # if no square equals 0
+
+def solveBoard(board):
+  findBoard = find_empty(board)
+  if not findBoard: # if the board is found
+    return True
+  else:
+    row, col = findBoard
+
+  for i in range(1,10):
+    if ifValid(board, i, (row, col)): # put the value to the board if valid
+      board[row][col] = i
+
+      #recursively calling solve function until solved or at least trying to solve
+      if solveBoard(board):
+        return True
+
+      board[row][col] = 0  # backtrack and reset value
+
+  return False
+
+def ifValid(board, num, position):
+  # Loop through every single column in given row
+  for i in range(len(board[0])):
+    # check if current value is equal to num and if it inserts in the position we just inserted
+    if board[position[0]][i] == num and position[1] != i:
+      return False
+
+  # Loop through every single row in given column
+  for i in range(len(board)):
+    # check if current value is equal to num and if it inserts in the position we just inserted
+    if board[i][position[1]] == num and position[0] != i:
+      return False
+
+  # Checking the square as we read in (the 3 X 3 small squares)
+  squareX = position[1] // 3
+  squareY = position[0] // 3
+
+  # to go to the specific square 
+  for i in range(squareY * 3, (squareY * 3) + 3):
+    for j in range(squareX * 3, (squareX * 3) + 3):
+      if board[i][j] == num and (i,j) != position:
+        return False
+
+  return True
+
+displayBoard(board)
+print("Sudoku not solved :( \n\n")
+solveBoard(board)
+displayBoard(board)
+print("Sudoku Solved! :)")
